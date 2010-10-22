@@ -7,6 +7,7 @@ import unittest
 
 from stacklogger import StackLogger, callingframe, framefunc, srcfile
 
+logging.logMultiprocessing = False
 logging.setLoggerClass(StackLogger)
 currentframe = inspect.currentframe
 
@@ -63,28 +64,10 @@ def fake_function():
 class BaseTest(unittest.TestCase):
 
     def setUp(self):
-        log = logging.getLogger("stacklogger")
-        log.propagate = False
-        logging.logMultiprocessing = False
-        handler = logging.handlers.BufferingHandler(1)
-        # Disable flushing.
-        handler.flush = lambda : None
-        log.addHandler(handler)
-        log.setLevel(logging.DEBUG)
-
-        self.stacklog = log
-        self.stackhandler = handler
+        pass
 
     def tearDown(self):
-        if not self.stackhandler.buffer:
-            return
-
-        sys.stderr.write("\n--- Collected logs\n")
-        for record in self.stackhandler.buffer:
-            sys.stderr.write(" > %s\n" % self.stackhandler.format(record))
-        self.stackhandler.buffer = []
-        self.stackhandler.close()
-        self.stackhandler = None
+        pass
     
     def assertModuleFileIs(self, first, second):
         name = os.path.basename(first)
@@ -166,7 +149,6 @@ class TestStackLogger(BaseTest):
         BaseTest.setUp(self)
         log = logging.getLogger("fakes")
         log.propagate = False
-        logging.logMultiprocessing = False
         handler = logging.handlers.BufferingHandler(10)
         log.addHandler(handler)
         log.setLevel(logging.DEBUG)
