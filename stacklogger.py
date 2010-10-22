@@ -12,6 +12,12 @@ def srcfile(fname):
     return os.path.normcase(srcfile)
 
 class StackLogger(logging.Logger):
+    """A logging channel.
+
+    A StackLogger inspects the calling context of a :class:`logging.LogRecord`,
+    adding useful information like the class where a method was defined to the
+    standard :class:`logging.Formatter` 'funcName' attribute.
+    """
 
     def callingframe(self, frame):
         """Return the first non-logging related frame from *frame*'s stack."""
@@ -23,6 +29,12 @@ class StackLogger(logging.Logger):
                 return frame
 
     def framefunc(self, frame):
+        """Return a string representation of the code object at *frame*.
+
+        *frame* should be a Python interpreter stack frame with a current code
+        object. If the code object is a method, :meth:`framefunc` will try to
+        determine the class in which the method was defined.
+        """
         rest = frame[1:]
         frame = frame[0]
         name = frame.f_code.co_name
@@ -44,6 +56,11 @@ class StackLogger(logging.Logger):
 
     def makeRecord(self, name, level, fn, lno, msg, 
             args, exc_info, func=None, extra=None):
+        """Build and return a :class:`logging.LogRecord`.
+
+        This method inspects the calling stack to add more information to the
+        usual :attr:`logging.LogRecord.funcName` attribute.
+        """
         rv = logging.Logger.makeRecord(self, name, level, fn, lno, msg, args,
             exc_info, func, extra)
         funcName = rv.funcName
