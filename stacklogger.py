@@ -34,6 +34,8 @@ def framefunc(frame):
     rest = frame[1:]
     frame = frame[0]
     name = frame.f_code.co_name
+    if name == "<module>":
+        name = "__main__"
     context = [name]
 
     # If the first argument to the frame's code is an instance, and that
