@@ -2,7 +2,7 @@ import inspect
 import logging
 import sys
 
-class ContextLogger(logging.Logger):
+class StackLogger(logging.Logger):
 
     def callingframe(self, frame):
         """Return the first non-logging related frame from *frame*'s stack."""
