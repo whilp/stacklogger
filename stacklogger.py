@@ -1,9 +1,6 @@
 import inspect
 import logging
-import os
 import sys
-
-from logn import Logn
 
 class ContextLogger(logging.Logger):
 
@@ -39,13 +36,3 @@ class ContextLogger(logging.Logger):
             del(frame)
 
         return rv
-
-logging.setLoggerClass(ContextLogger)
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(levelname)s:%(context)s:%(message)s",
-)
-
-logn = Logn(*[open(f) for f in sys.argv[1:]])
-for fname, line in logn:
-    print fname, line
