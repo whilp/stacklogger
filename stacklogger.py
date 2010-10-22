@@ -25,20 +25,21 @@ class StackLogger(logging.Logger):
     def framecontext(self, frame):
         rest = frame[1:]
         frame = frame[0]
-        context = [frame.f_code.co_name]
+        name = frame.f_code.co_name
+        context = [name]
 
         # If the first argument to the frame's code is an instance, and that
         # instance has a method with the same name as the frame's code, assume
         # that the code is a method of that instance.
         try:
             instance = frame.f_locals[frame.f_code.co_varnames[0]]
-            ismethod = instance.im_func.func_code == frame.f_code
+            ismethod = getattr(instance, name, None).im_func.func_code == frame.f_code
         except (AttributeError, IndexError, KeyError):
             instance = None
             ismethod = False
 
-        if ismethod:
-            instance.insert(0, instance.__class__.__name__)
+        if instance and ismethod:
+            context.insert(0, instance.__class__.__name__)
         return '.'.join(context)
 
     def makeRecord(self, name, level, fn, lno, msg, 
