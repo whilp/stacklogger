@@ -1,4 +1,5 @@
 import inspect
+import logging
 import os
 import unittest
 
@@ -6,24 +7,44 @@ from stacklogger import callingframe, framefunc, srcfile
 
 currentframe = inspect.currentframe
 
+try:
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        
+        def emit(self, record):
+            pass
+
+logging.getLogger("fakes").addHandler(NullHandler())
+
 class FakeFrames(object):
     
     def fake_method(self):
+        log = logging.getLogger("fakes")
+        log.debug("in FakeFrames.fake_method")
         return currentframe()
     
     @property
     def fake_property(self):
+        log = logging.getLogger("fakes")
+        log.debug("in FakeFrames.fake_property")
         return currentframe()
 
     @classmethod
     def fake_classmethod(cls):
+        log = logging.getLogger("fakes")
+        log.debug("in FakeFrames.fake_classmethod")
         return currentframe()
 
     @staticmethod
     def fake_staticmethod():
+        log = logging.getLogger("fakes")
+        log.debug("in FakeFrames.fake_method")
         return currentframe()
 
 def fake_function():
+    log = logging.getLogger("fakes")
+    log.debug("in fake_function")
     return currentframe()
 
 class BaseTest(unittest.TestCase):
