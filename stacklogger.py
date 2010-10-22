@@ -3,6 +3,8 @@ import logging
 import os
 import sys
 
+__all__ = ["srcfile", "callingframe", "framefunc", "StackLogger"]
+
 def srcfile(fname):
     """Sanitize a Python module's filename.
 
