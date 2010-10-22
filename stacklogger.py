@@ -11,6 +11,9 @@ import os
 import sys
 
 __all__ = ["srcfile", "callingframe", "framefunc", "StackLogger"]
+__todo__ = [item for item in """
+ * make method/function args/values available in log format
+""".split(" * ") if item]
 
 def srcfile(fname):
     """Sanitize a Python module's filename.
