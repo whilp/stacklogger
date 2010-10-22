@@ -25,7 +25,7 @@ meta = dict(
 )
 
 # Automatic conversion for Python 3 requires distribute.
-if sys.version_info >= (3,):
+if False and sys.version_info >= (3,):
     meta.update(dict(
         use_2to3=True,
     ))
