@@ -4,8 +4,9 @@ import logging.handlers
 import os
 import unittest
 
-from stacklogger import callingframe, framefunc, srcfile
+from stacklogger import StackLogger, callingframe, framefunc, srcfile
 
+logging.setLoggerClass(StackLogger)
 currentframe = inspect.currentframe
 
 try:
