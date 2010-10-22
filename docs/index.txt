@@ -10,6 +10,55 @@
     :members:
     :show-inheritance:
 
+Basic Usage
+-----------
+
+.. highlight:: python
+
+:mod:`stacklogger` will fit easily into your project if you're already using the
+standard logging module. If not, take a look at the `provided`_ `tutorials`_.
+Once your project is logging correctly, simply replace the usual
+:class:`logging.Logger` class with :class:`StackLogger`::
+
+    import logging
+
+    from stacklogger import StackLogger
+
+    logging.setLoggerClass(StackLogger)
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(funcName)s %(message)s",
+    )
+
+You won't see any difference unless you configure the :class:`logging.Formatter`
+to include the 'funcName' in log messages. :class:`StackLogger` inspects the
+calling stack to discover useful information that the standard logger doesn't
+include when it emits log messages. For example, :class:`StackLogger` will (try
+to) figure out the class of a method that calls one of the logging methods.
+Given the above logging configuration, consider the following example::
+
+    class Eggs(object):
+        
+        def scramble(self):
+            log = logging.getLogger("breakfast")
+            log.debug("scrambling")
+
+    eggs = Eggs()
+    eggs.scramble()
+
+.. highlight:: none
+
+The above snippet should produce output like the following::
+
+    Foo.scramble scrambling
+
+Remember, getting this information from the stack isn't free. It's best to
+enable :class:`StackLogger` only while debugging your project to avoid slowing
+your code down.
+
+.. _provided:   http://docs.python.org/library/logging.html#simple-examples
+.. _tutorials:  http://docs.python.org/library/logging.html#configuring-logging-for-a-library
+
 Installing :mod:`stacklogger`
 -----------------------------
 
