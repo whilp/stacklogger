@@ -16,7 +16,7 @@ class StackLogger(logging.Logger):
     def callingframe(self, frame):
         """Return the first non-logging related frame from *frame*'s stack."""
         # Frames in these files are logging-related and should be skipped.
-        logfiles = (logging._srcfile, __file__)
+        logfiles = (logging._srcfile, srcfile(__file__))
         for frame in inspect.getouterframes(frame):
             filename = frame[1]
             if filename not in logfiles:
