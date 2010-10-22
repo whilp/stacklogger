@@ -4,12 +4,14 @@ import os
 import sys
 
 def srcfile(fname):
-    srcfile = fname
-    if hasattr(sys, 'frozen'): #support for py2exe
-        srcfile = fname
-    elif fname.lower()[-4:] in ['.pyc', '.pyo']:
-        srcfile = fname[:-4] + '.py'
-    return os.path.normcase(srcfile)
+    """Sanitize a Python module's filename.
+
+    This function produces filenames similar to :data:`logging._srcfile` and
+    those returned by :func:`inspect.getsourcefile`.
+    """
+    if fname.lower()[-4:] in (".pyc", ".pyo"):
+        fname = fname.lower()[:-4] + ".py"
+    return os.path.normcase(os.path.abspath(fname))
 
 class StackLogger(logging.Logger):
     """A logging channel.
