@@ -58,6 +58,14 @@ def framefunc(frame):
         instance = frame.f_locals[frame.f_code.co_varnames[0]]
     except accesserr:
         instance = None
+
+    # Use instance.__class__.__dict__ here because instance.name (or
+    # getattr(instance, name) can cause things like properties to load in an
+    # infinite recursion.
+    try:
+        cls = instance.__class__
+        ismethod = cls.__dict__[name].func_code == frame.f_code
+    except accesserr:
         ismethod = False
 
     if instance and ismethod:
