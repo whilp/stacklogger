@@ -1,6 +1,15 @@
 import inspect
 import logging
+import os
 import sys
+
+def srcfile(fname):
+    srcfile = fname
+    if hasattr(sys, 'frozen'): #support for py2exe
+        srcfile = fname
+    elif fname.lower()[-4:] in ['.pyc', '.pyo']:
+        srcfile = fname[:-4] + '.py'
+    return os.path.normcase(srcfile)
 
 class StackLogger(logging.Logger):
 
