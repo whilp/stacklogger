@@ -17,6 +17,16 @@ except ImportError:
 
 logging.getLogger("fakes").addHandler(NullHandler())
 
+NoDefault = object()
+def getitem(obj, keyorindex, default=NoDefault):
+    try:
+        value = obj[keyorindex]
+    except IndexError:
+        if default is NoDefault:
+            raise
+        value = default
+    return value
+
 class FakeFrames(object):
     
     def fake_method(self):
