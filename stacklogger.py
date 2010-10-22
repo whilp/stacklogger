@@ -26,7 +26,7 @@ def srcfile(fname):
     return os.path.normcase(os.path.abspath(fname))
 
 def callingframe(frame):
-    """Return the first non-logging related frame from *frame*'s stack."""
+    """Return info about the first non-logging related frame from *frame*'s stack."""
     # Frames in these files are logging-related and should be skipped.
     logfiles = (logging._srcfile, srcfile(__file__))
     for frame in inspect.getouterframes(frame):
