@@ -1,3 +1,10 @@
+"""\
+stacklogger provides a stack-aware extension of the standard library's logging
+facility. With stacklogger, you can add useful information to your log messages
+without changing any code or adding extra dependencies for your users to
+install.
+"""
+
 import inspect
 import logging
 import os
