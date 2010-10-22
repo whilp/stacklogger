@@ -2,6 +2,7 @@ import inspect
 import logging
 import logging.handlers
 import os
+import sys
 import unittest
 
 from stacklogger import StackLogger, callingframe, framefunc, srcfile
@@ -60,6 +61,30 @@ def fake_function():
     return currentframe()
 
 class BaseTest(unittest.TestCase):
+
+    def setUp(self):
+        log = logging.getLogger("stacklogger")
+        log.propagate = False
+        logging.logMultiprocessing = False
+        handler = logging.handlers.BufferingHandler(1)
+        # Disable flushing.
+        handler.flush = lambda : None
+        log.addHandler(handler)
+        log.setLevel(logging.DEBUG)
+
+        self.stacklog = log
+        self.stackhandler = handler
+
+    def tearDown(self):
+        if not self.stackhandler.buffer:
+            return
+
+        sys.stderr.write("\n--- Collected logs\n")
+        for record in self.stackhandler.buffer:
+            sys.stderr.write(" > %s\n" % self.stackhandler.format(record))
+        self.stackhandler.buffer = []
+        self.stackhandler.close()
+        self.stackhandler = None
     
     def assertModuleFileIs(self, first, second):
         name = os.path.basename(first)
@@ -80,6 +105,7 @@ class TestFrameFuncs(BaseTest):
     infokeys = "frame filename lineno function context index".split()
     
     def setUp(self):
+        BaseTest.setUp(self)
         self.frames = dict(function=fake_function())
 
         fakes = FakeFrames()
@@ -137,6 +163,7 @@ class TestFrameFuncs(BaseTest):
 class TestStackLogger(BaseTest):
     
     def setUp(self):
+        BaseTest.setUp(self)
         log = logging.getLogger("fakes")
         log.propagate = False
         logging.logMultiprocessing = False
@@ -149,6 +176,7 @@ class TestStackLogger(BaseTest):
         self.fakes = FakeFrames()
 
     def tearDown(self):
+        BaseTest.tearDown(self)
         self.log.removeHandler(self.handler)
         self.handler.close()
         del(self.handler)
