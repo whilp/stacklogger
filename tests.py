@@ -100,6 +100,3 @@ class TestFrameFuncs(BaseTest):
 
     def test_framefunc_method(self):
         self.framefunc("method", "FakeFrames.fake_method")
-
-    def test_framefunc_property(self):
-        self.framefunc("property", "FakeFrames.fake_property")
