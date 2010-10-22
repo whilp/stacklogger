@@ -16,6 +16,16 @@ __todo__ = [item for item in """
  * make method/function args/values available in log format
 """.split(" * ") if item]
 
+try:
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        def emit(self, record):
+            pass
+
+# A logger for a logger...
+logging.getLogger("stacklogger").addHandler(NullHandler())
+
 def srcfile(fname):
     """Sanitize a Python module's filename.
 
@@ -43,11 +53,13 @@ def framefunc(frame):
     object is a method, :meth:`framefunc` will try to determine the class in
     which the method was defined.
     """
+    log = logging.getLogger("stacklogger")
     if not isinstance(frame, types.FrameType):
         frame = frame[0]
     name = frame.f_code.co_name
     if name == "<module>":
         name = "__main__"
+    log.debug("Building context for %s", name)
     context = [name]
 
     accesserr = (AttributeError, IndexError, KeyError)
