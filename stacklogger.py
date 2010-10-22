@@ -68,7 +68,9 @@ def framefunc(frame):
     # that the code is a method of that instance.
     try:
         instance = frame.f_locals[frame.f_code.co_varnames[0]]
+        log.debug("Found %s in instance %s", name, instance)
     except accesserr:
+        log.debug("Failed to find an instance for %s", name)
         instance = None
 
     # Use instance.__class__.__dict__ here because instance.name (or
@@ -77,6 +79,7 @@ def framefunc(frame):
     try:
         cls = instance.__class__
         ismethod = cls.__dict__[name].func_code == frame.f_code
+        log.debug("%s is a method of instance %s", name, instance)
     except accesserr:
         ismethod = False
 
