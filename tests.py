@@ -105,7 +105,7 @@ class TestFrameFuncs(BaseTest):
 
     def test_callingframe_function(self):
         self.callingframe("function", 
-            filename=os.path.basename(__file__),
+            filename=os.path.basename("tests.py"),
             function="fake_function")
 
     def test_callingframe_method(self):
