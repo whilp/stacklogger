@@ -1,5 +1,6 @@
 import inspect
 import logging
+import logging.handlers
 import os
 import unittest
 
@@ -131,3 +132,24 @@ class TestFrameFuncs(BaseTest):
 
     def test_framefunc_method(self):
         self.framefunc("method", "FakeFrames.fake_method")
+
+class TestStackLogger(BaseTest):
+    
+    def setUp(self):
+        log = logging.getLogger("fakes")
+        log.propagate = False
+        logging.logMultiprocessing = False
+        handler = logging.handlers.BufferingHandler(10)
+        log.addHandler(handler)
+        log.setLevel(logging.DEBUG)
+
+        self.log = log
+        self.handler = handler
+
+    def tearDown(self):
+        self.log.removeHandler(self.handler)
+        self.handler.close()
+        del(self.handler)
+
+    def getrecord(self, index=0):
+        return getitem(self.handler.buffer, index, None)
