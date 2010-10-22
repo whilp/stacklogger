@@ -22,7 +22,7 @@ class StackLogger(logging.Logger):
             if filename not in logfiles:
                 return frame
 
-    def framecontext(self, frame):
+    def framefunc(self, frame):
         rest = frame[1:]
         frame = frame[0]
         name = frame.f_code.co_name
@@ -46,13 +46,15 @@ class StackLogger(logging.Logger):
             args, exc_info, func=None, extra=None):
         rv = logging.Logger.makeRecord(self, name, level, fn, lno, msg, args,
             exc_info, func, extra)
+        funcName = rv.funcName
         frame = inspect.currentframe()
         try:
             frame = self.callingframe(frame)
-            rv.context = self.framecontext(frame)
+            funcName = self.framefunc(frame)
         finally:
             # Make sure we don't leak a reference to the frame to prevent a
             # reference cycle.
             del(frame)
 
+        rv.funcName = funcName
         return rv
