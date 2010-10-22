@@ -9,6 +9,7 @@ import inspect
 import logging
 import os
 import sys
+import types
 
 __all__ = ["srcfile", "callingframe", "framefunc", "StackLogger"]
 __todo__ = [item for item in """
@@ -38,11 +39,12 @@ def framefunc(frame):
     """Return a string representation of the code object at *frame*.
 
     *frame* should be a Python interpreter stack frame with a current code
-    object. If the code object is a method, :meth:`framefunc` will try to
-    determine the class in which the method was defined.
+    object (or a sequence with such a frame as its first element). If the code
+    object is a method, :meth:`framefunc` will try to determine the class in
+    which the method was defined.
     """
-    rest = frame[1:]
-    frame = frame[0]
+    if not isinstance(frame, types.FrameType):
+        frame = frame[0]
     name = frame.f_code.co_name
     if name == "<module>":
         name = "__main__"
