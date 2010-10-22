@@ -13,6 +13,41 @@ def srcfile(fname):
         fname = fname.lower()[:-4] + ".py"
     return os.path.normcase(os.path.abspath(fname))
 
+def callingframe(frame):
+    """Return the first non-logging related frame from *frame*'s stack."""
+    # Frames in these files are logging-related and should be skipped.
+    logfiles = (logging._srcfile, srcfile(__file__))
+    for frame in inspect.getouterframes(frame):
+        filename = frame[1]
+        if filename not in logfiles:
+            return frame
+
+def framefunc(frame):
+    """Return a string representation of the code object at *frame*.
+
+    *frame* should be a Python interpreter stack frame with a current code
+    object. If the code object is a method, :meth:`framefunc` will try to
+    determine the class in which the method was defined.
+    """
+    rest = frame[1:]
+    frame = frame[0]
+    name = frame.f_code.co_name
+    context = [name]
+
+    # If the first argument to the frame's code is an instance, and that
+    # instance has a method with the same name as the frame's code, assume
+    # that the code is a method of that instance.
+    try:
+        instance = frame.f_locals[frame.f_code.co_varnames[0]]
+        ismethod = getattr(instance, name, None).im_func.func_code == frame.f_code
+    except (AttributeError, IndexError, KeyError):
+        instance = None
+        ismethod = False
+
+    if instance and ismethod:
+        context.insert(0, instance.__class__.__name__)
+    return '.'.join(context)
+
 class StackLogger(logging.Logger):
     """A logging channel.
 
@@ -20,41 +55,6 @@ class StackLogger(logging.Logger):
     adding useful information like the class where a method was defined to the
     standard :class:`logging.Formatter` 'funcName' attribute.
     """
-
-    def callingframe(self, frame):
-        """Return the first non-logging related frame from *frame*'s stack."""
-        # Frames in these files are logging-related and should be skipped.
-        logfiles = (logging._srcfile, srcfile(__file__))
-        for frame in inspect.getouterframes(frame):
-            filename = frame[1]
-            if filename not in logfiles:
-                return frame
-
-    def framefunc(self, frame):
-        """Return a string representation of the code object at *frame*.
-
-        *frame* should be a Python interpreter stack frame with a current code
-        object. If the code object is a method, :meth:`framefunc` will try to
-        determine the class in which the method was defined.
-        """
-        rest = frame[1:]
-        frame = frame[0]
-        name = frame.f_code.co_name
-        context = [name]
-
-        # If the first argument to the frame's code is an instance, and that
-        # instance has a method with the same name as the frame's code, assume
-        # that the code is a method of that instance.
-        try:
-            instance = frame.f_locals[frame.f_code.co_varnames[0]]
-            ismethod = getattr(instance, name, None).im_func.func_code == frame.f_code
-        except (AttributeError, IndexError, KeyError):
-            instance = None
-            ismethod = False
-
-        if instance and ismethod:
-            context.insert(0, instance.__class__.__name__)
-        return '.'.join(context)
 
     def makeRecord(self, name, level, fn, lno, msg, 
             args, exc_info, func=None, extra=None):
@@ -68,8 +68,8 @@ class StackLogger(logging.Logger):
         funcName = rv.funcName
         frame = inspect.currentframe()
         try:
-            frame = self.callingframe(frame)
-            funcName = self.framefunc(frame)
+            frame = callingframe(frame)
+            funcName = framefunc(frame)
         finally:
             # Make sure we don't leak a reference to the frame to prevent a
             # reference cycle.
