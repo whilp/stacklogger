@@ -183,3 +183,8 @@ class TestStackLogger(BaseTest):
         self.fakes.fake_property
         record = self.getrecord()
         self.assertEqual(record.funcName, "FakeFrames.fake_property")
+
+    def test_stacklogger_classmethod(self):
+        self.fakes.fake_classmethod()
+        record = self.getrecord()
+        self.assertEqual(record.funcName, "FakeFrames.fake_classmethod")
