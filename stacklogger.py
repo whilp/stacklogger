@@ -16,6 +16,8 @@ __todo__ = [item for item in """
  * make method/function args/values available in log format
 """.split(" * ") if item]
 
+NoMatch = object()
+
 try:
     from logging import NullHandler
 except ImportError:
@@ -73,11 +75,12 @@ def framefunc(frame):
         cls = instance.__class__
         obj = cls.__dict__[name]
         log.debug("Found %s attribute on instance %s", name, instance)
-        match = True
     except accesserr:
-        match = False
+        obj = getattr(instance, name, NoMatch)
+        if obj is not NoMatch:
+            cls = instance
 
-    if match:
+    if obj is not NoMatch:
         context.insert(0, cls.__name__)
     return '.'.join(context)
 
