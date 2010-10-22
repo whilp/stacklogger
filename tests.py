@@ -25,7 +25,13 @@ class FakeFrames(object):
 def fake_function():
     return currentframe()
 
-class TestUtils(unittest.TestCase):
+class BaseTest(unittest.TestCase):
+    
+    def assertEndsWith(self, string, suffix):
+        self.assertTrue(string.endswith(suffix),
+            "%r missing suffix %r" % (string, suffix))
+
+class TestUtils(BaseTest):
     
     def test_srcfile(self):
         self.assertTrue(srcfile("foo.py").endswith("foo.py"))
@@ -33,7 +39,7 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(srcfile("foo.pyo").endswith("foo.py"))
         self.assertTrue(srcfile("foo").endswith("foo"))
 
-class TestFrameFuncs(unittest.TestCase):
+class TestFrameFuncs(BaseTest):
     infokeys = "frame filename lineno function context index".split()
     
     def setUp(self):
@@ -53,7 +59,7 @@ class TestFrameFuncs(unittest.TestCase):
         result = dict(zip(self.infokeys, callingframe(self.frames[framekey])))
         for k, v in expectedkeys.items():
             if k == "filename":
-                self.assertTrue(result[k].endswith(v))
+                self.assertEndsWith(result[k], v)
             else:
                 self.assertEqual(v, result[k])
 
