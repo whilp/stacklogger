@@ -72,3 +72,18 @@ class TestFrameFuncs(BaseTest):
         self.callingframe("method",
             filename="tests.py",
             function="fake_method")
+
+    def test_callingframe_property(self):
+        self.callingframe("property",
+            filename="tests.py",
+            function="fake_property")
+
+    def test_callingframe_classmethod(self):
+        self.callingframe("classmethod",
+            filename="tests.py",
+            function="fake_classmethod")
+
+    def test_callingframe_staticmethod(self):
+        self.callingframe("staticmethod",
+            filename="tests.py",
+            function="fake_staticmethod")
