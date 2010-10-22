@@ -1,4 +1,5 @@
 import inspect
+import os
 import unittest
 
 from stacklogger import callingframe, srcfile
@@ -27,17 +28,20 @@ def fake_function():
 
 class BaseTest(unittest.TestCase):
     
-    def assertEndsWith(self, string, suffix):
-        self.assertTrue(string.endswith(suffix),
-            "%r missing suffix %r" % (string, suffix))
+    def assertModuleFileIs(self, first, second):
+        name = os.path.basename(first)
+        if name[-4:] in (".pyc", ".pyo"):
+            name = name[:-4] + ".py"
+        self.assertEquals(name, second,
+            "%r != %r" % (name, second))
 
 class TestUtils(BaseTest):
     
     def test_srcfile(self):
-        self.assertTrue(srcfile("foo.py").endswith("foo.py"))
-        self.assertTrue(srcfile("foo.pyc").endswith("foo.py"))
-        self.assertTrue(srcfile("foo.pyo").endswith("foo.py"))
-        self.assertTrue(srcfile("foo").endswith("foo"))
+        self.assertModuleFileIs(srcfile("foo.py"), "foo.py")
+        self.assertModuleFileIs(srcfile("foo.pyc"), "foo.py")
+        self.assertModuleFileIs(srcfile("foo.pyo"), "foo.py")
+        self.assertModuleFileIs(srcfile("foo"), "foo")
 
 class TestFrameFuncs(BaseTest):
     infokeys = "frame filename lineno function context index".split()
@@ -59,13 +63,13 @@ class TestFrameFuncs(BaseTest):
         result = dict(zip(self.infokeys, callingframe(self.frames[framekey])))
         for k, v in expectedkeys.items():
             if k == "filename":
-                self.assertEndsWith(result[k], v)
+                self.assertModuleFileIs(result[k], v)
             else:
                 self.assertEqual(v, result[k])
 
     def test_callingframe_function(self):
         self.callingframe("function", 
-            filename=__file__,
+            filename=os.path.basename(__file__),
             function="fake_function")
 
     def test_callingframe_method(self):
