@@ -2,7 +2,7 @@ import inspect
 import os
 import unittest
 
-from stacklogger import callingframe, srcfile
+from stacklogger import callingframe, framefunc, srcfile
 
 currentframe = inspect.currentframe
 
@@ -67,6 +67,9 @@ class TestFrameFuncs(BaseTest):
             else:
                 self.assertEqual(v, result[k])
 
+    def framefunc(self, framekey, expectedname):
+        self.assertEquals(framefunc(self.frames[framekey]), expectedname)
+
     def test_callingframe_function(self):
         self.callingframe("function", 
             filename=os.path.basename(__file__),
@@ -91,3 +94,12 @@ class TestFrameFuncs(BaseTest):
         self.callingframe("staticmethod",
             filename="tests.py",
             function="fake_staticmethod")
+
+    def test_framefunc_function(self):
+        self.framefunc("function", "fake_function")
+
+    def test_framefunc_method(self):
+        self.framefunc("method", "FakeFrames.fake_method")
+
+    def test_framefunc_property(self):
+        self.framefunc("property", "FakeFrames.fake_property")
