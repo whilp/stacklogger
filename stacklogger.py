@@ -50,13 +50,13 @@ def framefunc(frame):
         name = "__main__"
     context = [name]
 
+    accesserr = (AttributeError, IndexError, KeyError)
     # If the first argument to the frame's code is an instance, and that
     # instance has a method with the same name as the frame's code, assume
     # that the code is a method of that instance.
     try:
         instance = frame.f_locals[frame.f_code.co_varnames[0]]
-        ismethod = getattr(instance, name, None).im_func.func_code == frame.f_code
-    except (AttributeError, IndexError, KeyError):
+    except accesserr:
         instance = None
         ismethod = False
 
