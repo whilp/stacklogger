@@ -64,27 +64,21 @@ def framefunc(frame):
 
     accesserr = (AttributeError, IndexError, KeyError)
     # If the first argument to the frame's code is an instance, and that
-    # instance has a method with the same name as the frame's code, assume
-    # that the code is a method of that instance.
+    # instance has a attribute with the same name as the frame's code, assume that
+    # the code is a attribute of that instance. Use instance.__class__.__dict__
+    # here because instance.name (or getattr(instance, name) can cause things
+    # like properties to load in an infinite recursion.
     try:
         instance = frame.f_locals[frame.f_code.co_varnames[0]]
-        log.debug("Found %s in instance %s", name, instance)
-    except accesserr:
-        log.debug("Failed to find an instance for %s", name)
-        instance = None
-
-    # Use instance.__class__.__dict__ here because instance.name (or
-    # getattr(instance, name) can cause things like properties to load in an
-    # infinite recursion.
-    try:
         cls = instance.__class__
-        ismethod = cls.__dict__[name].func_code == frame.f_code
-        log.debug("%s is a method of instance %s", name, instance)
+        obj = cls.__dict__[name]
+        log.debug("Found %s attribute on instance %s", name, instance)
+        match = True
     except accesserr:
-        ismethod = False
+        match = False
 
-    if instance and ismethod:
-        context.insert(0, instance.__class__.__name__)
+    if match:
+        context.insert(0, cls.__name__)
     return '.'.join(context)
 
 class StackLogger(logging.Logger):
