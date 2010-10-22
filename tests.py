@@ -146,6 +146,7 @@ class TestStackLogger(BaseTest):
 
         self.log = log
         self.handler = handler
+        self.fakes = FakeFrames()
 
     def tearDown(self):
         self.log.removeHandler(self.handler)
@@ -154,3 +155,13 @@ class TestStackLogger(BaseTest):
 
     def getrecord(self, index=0):
         return getitem(self.handler.buffer, index, None)
+
+    def test_stacklogger_function(self):
+        fake_function()
+        record = self.getrecord()
+        self.assertEqual(record.funcName, "fake_function")
+
+    def test_stacklogger_method(self):
+        self.fakes.fake_method()
+        record = self.getrecord()
+        self.assertEqual(record.funcName, "FakeFrames.fake_method")
