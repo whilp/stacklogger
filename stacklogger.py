@@ -93,24 +93,19 @@ class StackLogger(logging.Logger):
     standard :class:`logging.Formatter` 'funcName' attribute.
     """
 
-    def makeRecord(self, name, level, fn, lno, msg, 
-            args, exc_info, func=None, extra=None):
-        """Build and return a :class:`logging.LogRecord`.
-
-        This method inspects the calling stack to add more information to the
-        usual :attr:`logging.LogRecord.funcName` attribute.
-        """
-        rv = logging.Logger.makeRecord(self, name, level, fn, lno, msg, args,
-            exc_info, func, extra)
-        funcName = rv.funcName
+    def findCaller(self):
+        """Return the filename, line number and function name of the caller's frame."""
         frame = inspect.currentframe()
+        filename = "(unknown file)"
+        lineno = 0
+        funcName = "(unknown function)"
         try:
             frame = callingframe(frame)
             funcName = framefunc(frame)
+            filename, lineno = frame[1:3]
         finally:
             # Make sure we don't leak a reference to the frame to prevent a
             # reference cycle.
             del(frame)
 
-        rv.funcName = funcName
-        return rv
+        return (os.path.normcase(filename), lineno, funcName)

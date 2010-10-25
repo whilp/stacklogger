@@ -214,38 +214,54 @@ class TestStackLogger(BaseTest):
         fake_function()
         record = self.getrecord()
         self.assertEqual(record.funcName, "fake_function")
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
 
     def test_stacklogger_lambda(self):
         fake_lambda()
         record = self.getrecord()
         self.assertEqual(record.funcName, "<lambda>")
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
 
     def test_stacklogger_method(self):
         self.fakes.fake_method()
         record = self.getrecord()
         self.assertEqual(record.funcName, "FakeFrames.fake_method")
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
 
     def test_stacklogger_property(self):
         self.fakes.fake_property
         record = self.getrecord()
         self.assertEqual(record.funcName, "FakeFrames.fake_property")
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
 
     def test_stacklogger_classmethod(self):
         self.fakes.fake_classmethod()
         record = self.getrecord()
         self.assertEqual(record.funcName, "FakeFrames.fake_classmethod")
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
 
     def test_stacklogger_staticmethod(self):
         self.fakes.fake_staticmethod()
         record = self.getrecord()
         self.assertEqual(record.funcName, "fake_staticmethod")
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
 
     def test_stacklogger_class_classmethod(self):
         FakeFrames.fake_classmethod()
         record = self.getrecord()
         self.assertEqual(record.funcName, "FakeFrames.fake_classmethod")
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
 
     def test_stacklogger_class_staticmethod(self):
         FakeFrames.fake_staticmethod()
         record = self.getrecord()
+        self.assertEqual(record.filename, "tests.py")
+        self.assertNotEquals(record.lineno, 0)
         self.assertEqual(record.funcName, "fake_staticmethod")
