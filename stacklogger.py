@@ -43,10 +43,12 @@ def callingframe(frame):
 def framefunc(frame):
     """Return a string representation of the code object at *frame*.
 
-    *frame* should be a Python interpreter stack frame with a current code
-    object (or a sequence with such a frame as its first element). If the code
-    object is a method, :meth:`framefunc` will try to determine the class in
-    which the method was defined.
+    *frame* should be a Python interpreter stack frame with a current
+    code object (or a sequence with such a frame as its first element).
+    :meth:`framefunc` will try to determine where the calling function was
+    defined; if the function was defined in a class (as with properties,
+    methods and classmethods), the class' name will be prepended to the function
+    name (like *class.function*).
     """
     log = logging.getLogger("stacklogger")
     if not isinstance(frame, types.FrameType):
@@ -81,9 +83,10 @@ def framefunc(frame):
 class StackLogger(logging.Logger):
     """A logging channel.
 
-    A StackLogger inspects the calling context of a :class:`logging.LogRecord`,
-    adding useful information like the class where a method was defined to the
-    standard :class:`logging.Formatter` 'funcName' attribute.
+    A :class:`StackLogger` inspects the calling context of a
+    :class:`logging.LogRecord`, adding useful information like the class where
+    a method was defined to the standard :class:`logging.Formatter` 'funcName'
+    attribute.
     """
 
     def findCaller(self):
