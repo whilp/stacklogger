@@ -19,7 +19,7 @@ meta = dict(
         "License :: OSI Approved :: BSD License",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
-        "Programming Language :: Python"
+        "Programming Language :: Python",
         "Topic :: System :: Logging",
     ],
 )
