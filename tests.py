@@ -107,6 +107,11 @@ class TestFrameFuncs(BaseTest):
                 value = value()
             self.frames[key] = value
 
+        # Include uninstantiated versions of static/classmethods, too.
+        for method in ("class", "static"):
+            self.frames["class_%smethod" % method] = \
+                getattr(FakeFrames, "fake_%smethod" % method)()
+
     def callingframe(self, framekey, **expectedkeys):
         result = dict(zip(self.infokeys, callingframe(self.frames[framekey])))
         for k, v in expectedkeys.items():
@@ -148,6 +153,16 @@ class TestFrameFuncs(BaseTest):
             filename="tests.py",
             function="fake_staticmethod")
 
+    def test_callingframe_class_classmethod(self):
+        self.callingframe("class_classmethod",
+            filename="tests.py",
+            function="fake_classmethod")
+
+    def test_callingframe_class_staticmethod(self):
+        self.callingframe("class_staticmethod",
+            filename="tests.py",
+            function="fake_staticmethod")
+
     def test_framefunc_function(self):
         self.framefunc("function", "fake_function")
 
@@ -165,6 +180,12 @@ class TestFrameFuncs(BaseTest):
 
     def test_framefunc_staticmethod(self):
         self.framefunc("staticmethod", "fake_staticmethod")
+
+    def test_framefunc_class_classmethod(self):
+        self.framefunc("class_classmethod", "FakeFrames.fake_classmethod")
+
+    def test_framefunc_class_staticmethod(self):
+        self.framefunc("class_staticmethod", "fake_staticmethod")
 
 class TestStackLogger(BaseTest):
     
@@ -216,5 +237,15 @@ class TestStackLogger(BaseTest):
 
     def test_stacklogger_staticmethod(self):
         self.fakes.fake_staticmethod()
+        record = self.getrecord()
+        self.assertEqual(record.funcName, "fake_staticmethod")
+
+    def test_stacklogger_class_classmethod(self):
+        FakeFrames.fake_classmethod()
+        record = self.getrecord()
+        self.assertEqual(record.funcName, "FakeFrames.fake_classmethod")
+
+    def test_stacklogger_class_staticmethod(self):
+        FakeFrames.fake_staticmethod()
         record = self.getrecord()
         self.assertEqual(record.funcName, "fake_staticmethod")
