@@ -54,13 +54,14 @@ The above snippet should produce output like the following::
 
     Foo.scramble scrambling
 
-Enabling :class:`~stacklogger.StackLogger` shouldn't slow your application or library down
-any more than using the default :class:`~logging.Logger` implementation. Simple
-performance tests show essentially no difference in performance between the two
-implementations; in fact, :class:`~logging.Logger` already looks at the interpreter
-stack each time it's called. :class:`~stacklogger.StackLogger` is a bit smarter about how it 
-figures out where a calling function was defined, but it doesn't cost much more
-than regular logging.
+Enabling :class:`~stacklogger.StackLogger` shouldn't slow your application
+or library down any more than using the default :class:`~logging.Logger`
+implementation. Simple tests show essentially no difference in performance
+between the two implementations; in fact, :class:`~logging.Logger`
+already looks at the interpreter stack each time it's called.
+:class:`~stacklogger.StackLogger` is a bit smarter about how it figures out
+where a calling function was defined, but it doesn't cost much more than regular
+logging.
 
 .. _provided:   http://docs.python.org/library/logging.html#simple-examples
 .. _tutorials:  http://docs.python.org/library/logging.html#configuring-logging-for-a-library
