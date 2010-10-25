@@ -31,12 +31,13 @@ the standard :mod:`logging` module. If not, take a look at the `provided`_
         format="%(funcName)s %(message)s",
     )
 
-You won't see any difference unless you configure the :class:`~logging.Formatter`
-to include the 'funcName' in log messages. :class:`~stacklogger.StackLogger` inspects the
-calling stack to discover useful information that the standard logger doesn't
-include when it emits log messages. For example, :class:`~stacklogger.StackLogger` will (try
-to) figure out the class of a method that calls one of the logging methods.
-Given the above logging configuration, consider the following example::
+You won't see any difference unless you configure the
+:class:`~logging.Formatter` to include the 'funcName' in log messages.
+:class:`~stacklogger.StackLogger` inspects the calling stack to discover
+useful information that the standard logger doesn't include when it emits log
+messages. For example, :class:`~stacklogger.StackLogger` will figure out the
+class of a method that calls one of the logging methods. Given the above logging
+configuration, consider the following example::
 
     class Eggs(object):
         
