@@ -53,7 +53,7 @@ class FakeFrames(object):
     @staticmethod
     def fake_staticmethod():
         log = logging.getLogger("fakes")
-        log.debug("in FakeFrames.fake_method")
+        log.debug("in FakeFrames.fake_staticmethod")
         return currentframe()
 
 def fake_function():
@@ -163,6 +163,9 @@ class TestFrameFuncs(BaseTest):
     def test_framefunc_classmethod(self):
         self.framefunc("classmethod", "FakeFrames.fake_classmethod")
 
+    def test_framefunc_staticmethod(self):
+        self.framefunc("staticmethod", "fake_staticmethod")
+
 class TestStackLogger(BaseTest):
     
     def setUp(self):
@@ -210,3 +213,8 @@ class TestStackLogger(BaseTest):
         self.fakes.fake_classmethod()
         record = self.getrecord()
         self.assertEqual(record.funcName, "FakeFrames.fake_classmethod")
+
+    def test_stacklogger_staticmethod(self):
+        self.fakes.fake_staticmethod()
+        record = self.getrecord()
+        self.assertEqual(record.funcName, "fake_staticmethod")
