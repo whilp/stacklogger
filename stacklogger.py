@@ -70,6 +70,7 @@ def framefunc(frame):
     # the code is a attribute of that instance. Use instance.__class__.__dict__
     # here because instance.name (or getattr(instance, name) can cause things
     # like properties to load in an infinite recursion.
+    instance = None
     try:
         instance = frame.f_locals[frame.f_code.co_varnames[0]]
         cls = instance.__class__

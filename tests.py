@@ -61,6 +61,9 @@ def fake_function():
     log.debug("in fake_function")
     return currentframe()
 
+fake_lambda = lambda: logging.getLogger("fakes").debug("in fake_lambda") \
+    or currentframe()
+
 class BaseTest(unittest.TestCase):
 
     def setUp(self):
@@ -89,7 +92,10 @@ class TestFrameFuncs(BaseTest):
     
     def setUp(self):
         BaseTest.setUp(self)
-        self.frames = dict(function=fake_function())
+        self.frames = dict(
+            function=fake_function(),
+            _lambda=fake_lambda(),
+        )
 
         fakes = FakeFrames()
         for name in dir(fakes):
@@ -111,6 +117,11 @@ class TestFrameFuncs(BaseTest):
 
     def framefunc(self, framekey, expectedname):
         self.assertEquals(framefunc(self.frames[framekey]), expectedname)
+
+    def test_callingframe_lambda(self):
+        self.callingframe("_lambda", 
+            filename=os.path.basename("tests.py"),
+            function="<lambda>")
 
     def test_callingframe_function(self):
         self.callingframe("function", 
@@ -139,6 +150,9 @@ class TestFrameFuncs(BaseTest):
 
     def test_framefunc_function(self):
         self.framefunc("function", "fake_function")
+
+    def test_framefunc_lambda(self):
+        self.framefunc("_lambda", "<lambda>")
 
     def test_framefunc_method(self):
         self.framefunc("method", "FakeFrames.fake_method")
@@ -176,6 +190,11 @@ class TestStackLogger(BaseTest):
         fake_function()
         record = self.getrecord()
         self.assertEqual(record.funcName, "fake_function")
+
+    def test_stacklogger_lambda(self):
+        fake_lambda()
+        record = self.getrecord()
+        self.assertEqual(record.funcName, "<lambda>")
 
     def test_stacklogger_method(self):
         self.fakes.fake_method()
