@@ -146,6 +146,9 @@ class TestFrameFuncs(BaseTest):
     def test_framefunc_property(self):
         self.framefunc("property", "FakeFrames.fake_property")
 
+    def test_framefunc_classmethod(self):
+        self.framefunc("classmethod", "FakeFrames.fake_classmethod")
+
 class TestStackLogger(BaseTest):
     
     def setUp(self):
