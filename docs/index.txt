@@ -64,6 +64,28 @@ than regular logging.
 .. _provided:   http://docs.python.org/library/logging.html#simple-examples
 .. _tutorials:  http://docs.python.org/library/logging.html#configuring-logging-for-a-library
 
+Caveat
+++++++
+
+:class:`~stacklogger.StackLogger` tries pretty hard to figure out where a caller of a logging
+method was defined. It is able to provide much more information than the
+standard library :class:`~logging.Logger`, but there are some things that even
+:class:`~stacklogger.StackLogger` can't (reasonably) figure out:
+
+ * lambdas will always appear as *<lambda>*;
+ * static methods will only show the name of the method -- it's not possible to
+   discover the name of the class in which the method was defined.
+
+Other somewhat exotic calling contexts --- like classmethods --- are supported.
+See the test suite for more examples.
+
+API
+---
+
+.. automodule:: stacklogger
+    :members:
+    :show-inheritance:
+
 Installing :mod:`stacklogger`
 -----------------------------
 
